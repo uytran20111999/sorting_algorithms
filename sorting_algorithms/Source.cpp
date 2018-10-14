@@ -1,4 +1,5 @@
-#include<iostream>
+﻿#include<iostream>
+#include<vector>
 #include<climits>
 using namespace std;
 void interchange_sort(int *a,int n){
@@ -227,6 +228,59 @@ void heap_sort(int *a,int n){
 		heapify(a, 0, n);
 	}
 }
+void flashSort(int *a, int n) {
+	// phân lớp dữ liệu tốt nhât là m = 0.43n btw
+	// m = 0.2 n btw
+	// phân lớp
+	int m = n / 5;
+	int min = a[0];
+	int Imax = 0;
+	vector<int>L;
+	L.resize(m);
+	for (int i = 0; i < n; i++) {
+		if (i < m)L[i] = 0;
+		if (min > a[i])min = a[i];
+		if (a[Imax] < a[i])Imax = i;
+	}
+	double constant = 1.0*(m - 1) / (a[Imax] - min);
+	for (int i = 0; i < n; i++) {
+		int temp = int(constant*(a[i] - a[min]));
+		L[temp]++;
+	}
+	for (int i = 1; i < m; i++) {
+		L[i] = L[i - 1] + L[i];
+	}
+	swap(a[Imax], a[0]);
+	// hoan vi
+	int dem = 0;
+	int k1 = m - 1;
+	int j = 0;
+	while (dem < n - 1) {
+		while (j > L[k1] - 1) {
+			j++;
+			k1 = int(constant*(a[j] - min));
+		}
+		int flash = a[j];
+		while (j != L[k1]) {
+			k1 = int(constant*(flash - min));
+			int hold = a[L[k1] - 1];
+			a[L[k1] - 1] = flash;
+			flash = hold;
+			L[k1] --;
+			dem++;
+		}
+	}
+	for (int i = 1; i < n; i++) {
+		int j = i - 1;
+		int x = a[i];
+		while (j >= 0 && a[j] > x) {
+			a[j + 1] = a[j];
+			j--;
+		}
+		a[j + 1] = x;
+	}
+
+}
 void main(){
 	int b[] = {4,10,3,5,1};
 	int nb = sizeof(b) / 4;
@@ -243,7 +297,9 @@ void main(){
 //	merge_sort(a, n);
 //	counting_sort(a, n);
 //	radix_sort(a, n);
-	heap_sort(b, nb);
+//	heap_sort(b, nb);
 	//creat_heap(b, nb);
-	for (int i = 0; i < nb; i++)cout << b[i] << ' ';
+//	min_max_sort(a, n);
+	flashSort(a, n);
+	for (int i = 0; i < n; i++)cout << a[i] << ' ';
 }
